@@ -1,0 +1,118 @@
+<form action="/register" method="post">
+    <!-- Shared fields -->
+    <label for="userType">User Type</label>
+    <select name="userType" id="userType" required onchange="formChange()">
+        <option value="" disabled <% if(typeof userType=='undefined' ) { %>
+            <%- 'selected' %>
+                <% } %>>--
+        </option>
+        <option value="vendor" <% if(typeof userType !='undefined' && userType=='vendor' ) { %>
+            <%- 'selected' %>
+                <% } %>>Vendor
+        </option>
+        <option value="customer" <% if(typeof userType !='undefined' && userType=='customer' ) { %>
+            <%- 'selected' %>
+                <% } %>>Customer
+        </option>
+        <option value="shipper" <% if(typeof userType !='undefined' && userType=='shipper' ) { %>
+            <%- 'selected' %>
+                <% } %>>Shipper
+        </option>
+    </select>
+
+    <label for="username">Username</label>
+    <input type="text" name="username" id="username" required placeholder="Username" minlength="8" maxlength="15"
+        pattern="[a-zA-z0-9]+" value=<%=typeof username !='undefined' ? username : "" %>>
+
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" required placeholder="Password" minlength="8" maxlength="20"
+        pattern="^(?=[0-9a-zA-Z!@#$%^&*]{8,20}$)(?=[^a-z]*[a-z])(?=[^A-Z]*[A-Z])(?=[^0-9]*[0-9])(?=[^!@#$%^&*]*[!@#$%^&*]).*">
+
+    <label for="profilePicture">Profile Picture</label>
+    <input type="file" name="profilePicture" id="profilePicture">
+
+    <!-- Vendor fields -->
+    <label class="vendor" hidden for="businessName">Business Name</label>
+    <input class="vendor" hidden type="text" name="businessName" id="businessName" placeholder="Business Name"
+        minlength="5" value=<%=typeof businessName !='undefined' ? businessName : "" %>>
+
+    <label class="vendor" hidden for="businessAddress">Business Address</label>
+    <input class="vendor" hidden type="text" name="businessAddress" id="businessAddress" placeholder="Business Address"
+        minlength="5" value=<%=typeof businessAddress !='undefined' ? businessAddress : "" %>>
+
+    <!-- Customer fields -->
+    <label class="customer" hidden for="name">Name</label>
+    <input class="customer" hidden type="text" name="name" id="name" placeholder="Name" minlength="5" value=<%=typeof
+        name !='undefined' ? name : "" %>>
+
+    <label class="customer" hidden for="address">Address</label>
+    <input class="customer" hidden type="text" name="address" id="address" placeholder="Address" minlength="5"
+        value=<%=typeof address !='undefined' ? address : "" %>>
+
+    <!-- Shipper fields -->
+    <label class="shipper" hidden for="distributionHub">Distribution Hub</label>
+    <select class="shipper" hidden name="distributionHub" id="distributionHub">
+        <option value="" disabled selected>--</option>
+        <option value="" disabled <% if(typeof userType=='undefined' ) { %>
+            <%- 'selected' %>
+                <% } %>>--
+        </option>
+        <option value="hanoi" <% if(typeof userType !='undefined' && userType=='hanoi' ) { %>
+            <%- 'selected' %>
+                <% } %>>Ha Noi
+        </option>
+        <option value="danang" <% if(typeof userType !='undefined' && userType=='danang' ) { %>
+            <%- 'selected' %>
+                <% } %>>Da Nang
+        </option>
+        <option value="hcm" <% if(typeof userType !='undefined' && userType=='hcm' ) { %>
+            <%- 'selected' %>
+                <% } %>>Ho Chi Minh
+        </option>
+    </select>
+
+    <input type="submit" value="Register">
+
+    <% if (typeof error !='undefined' ) { %>
+        <%= error %>
+            <% } %>
+</form>
+
+<script>
+    function formChange() {
+        const userType = document.getElementById('userType').value;
+        const vendors = document.querySelectorAll('.vendor');
+        const customers = document.querySelectorAll('.customer');
+        const shippers = document.querySelectorAll('.shipper');
+
+        disableElements(vendors);
+        disableElements(customers);
+        disableElements(shippers);
+
+        if (userType == 'vendor') {
+            enableElements(vendors);
+        } else if (userType == 'customer') {
+            enableElements(customers);
+        } else if (userType == 'shipper') {
+            enableElements(shippers);
+        }
+    }
+
+    function enableElements(elements) {
+        elements.forEach(element => {
+            element.removeAttribute('hidden');
+            if (element.tagName == 'INPUT' || element.tagName == 'SELECT') {
+                element.setAttribute('required', '');
+            }
+        });
+    }
+
+    function disableElements(elements) {
+        elements.forEach(element => {
+            element.setAttribute('hidden', '');
+            if (element.tagName == 'INPUT' || element.tagName == 'SELECT') {
+                element.removeAttribute('required');
+            }
+        });
+    }
+</script>
