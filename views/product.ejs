@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+	<title><%= product.name %></title>
+<%- include('partials/nav') %>
+
+<main>
+    <div class="main-container single-product">
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                <img width="100%" src="data:image/<%= product.picture.contentType %>;base64,
+                <%= product.picture.data.toString('base64') %>" alt="<%= product.name %>">
+            </div>
+            <div class="col-12 col-lg-6">
+                <h1><%= product.name %></h1>
+                <h2><%= product.vendor.businessName %></h2>
+                <h4>$<%= product.price %></h4>
+
+                <% if (typeof user !='undefined' && user.userType == 'customer') { %>
+                <form action="/cart/add/<%= product._id %>" method="post">
+                    <button type="submit" class="btn">Add to Cart</button>
+                </form>
+                <% } %>
+
+                <br>
+                
+                <h3>PRODUCT DETAILS <i class="fa fa-indent"></i></h3>
+                <br>
+                <p><%= product.description %></p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,62 @@
+<%- include('partials/header') %>
+	<title>Account</title>
+<%- include('partials/nav') %>
+
+<main>
+    <div id="form-page">
+        <form novalidate>
+            <div class="title">
+                <h2>Account</h2>
+            </div>
+
+            <div class="item">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" id="username" value="<%= user.username %>" disabled>
+            </div>
+
+            <div class="item">
+                <label for="profilePicture" class="form-label">Profile Picture</label>
+                <img src="data:image/<%= user.profilePicture.contentType %>;base64,
+                    <%= user.profilePicture.data.toString('base64') %>" alt="Profile Picture" id="profilePicture">
+            </div>
+
+            <% if (user.userType == 'vendor') { %>
+                <div class="item">
+                    <label for="businessName" class="form-label">Business Name</label>
+                    <input type="text" name="businessName" class="form-control" id="businessName" value="<%= user.businessName %>" disabled>
+                </div>
+
+                <div class="item">
+                    <label for="businessAddress" class="form-label">Business Address</label>
+                    <input type="text" name="businessAddress" class="form-control" id="businessAddress" value="<%= user.businessAddress %>" disabled>
+                </div>
+            <% } %>
+
+            <% if (user.userType == 'customer') { %>
+                <div class="item">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" name="name" class="form-control" id="name" value="<%= user.name %>" disabled>
+                </div>
+
+                <div class="item">
+                    <label for="address" class="form-label">Address</label>
+                    <input type="text" name="address" class="form-control" id="address" value="<%= user.address %>" disabled>
+                </div>
+            <% } %>
+
+            <% if (user.userType == 'shipper') { %>
+                <div class="item">
+                    <label class="form-label" for="distributionHub">Distribution Hub</label>
+                    <select class="form-select" name="distributionHub" id="distributionHub" disabled>
+                    <% for (let i = 0; i < possibleDistributionHubs.length; i++) { %>
+                        <option value="<%= possibleDistributionHubs[i] %>" <% if (user.distributionHub == possibleDistributionHubs[i]) { %>
+                            selected
+                        <% } %>><%= possibleDistributionHubs[i] %></option>
+                    <% } %>
+                    </select>
+                </div>
+            <% } %>
+        </form>
+    </div>
+</main>
+<%- include('partials/footer') %>

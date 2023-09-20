@@ -1,0 +1,51 @@
+<%- include('partials/header') %>
+	<title>Add Product</title>
+<%- include('partials/nav') %>
+
+<main>
+	<div id="form-page">
+		<form action="/shop/add" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+			<div class="title">
+				<h2>Add Product</h2>
+			</div>
+
+			<!-- Backend validation error -->
+			<div class="text-danger hint">
+				<% if (typeof error !='undefined' ) { %>
+					<%= error %>
+						<% } %>
+			</div>
+
+			<div class="item">
+				<label for="name" class="form-label">Name</label>
+				<input type="text" name="name" class="form-control" id="name" placeholder="Name" minlength="10"
+					maxlength="20" required>
+				<div class="invalid-feedback">Product name must be 10-20 characters</div>
+			</div>
+
+			<div class="item">
+				<label for="price" class="form-label">Price</label>
+				<input type="text" name="price" class="form-control" id="price" placeholder="Price" pattern="^\d*(\.\d{0,2})?$" required>
+				<div class="invalid-feedback">Price must be a positive number with maximum 2 decimal places</div>
+			</div>
+
+			<div class="item">
+				<label for="picture" class="form-label">Profile Picture</label>
+				<input type="file" name="picture" class="form-control" id="picture" required>
+				<div class="invalid-feedback">Please select a product picture</div>
+			</div>
+
+			<div class="item">
+				<label for="description" class="form-label">Description</label>
+				<textarea name="description" class="form-control" id="description" maxlength="500" required></textarea>
+			</div>
+
+			<div>
+				<button type="submit" class="btn btn-primary">Add Product</button>
+			</div>
+		</form>
+	</div>
+</main>
+
+<script src="/js/formValidate.js"></script>
+<%- include('partials/footer') %>

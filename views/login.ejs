@@ -1,15 +1,49 @@
-<form action="/login" method="post">
-    <label for="username">Username</label>
-    <input type="text" name="username" id="username" required placeholder="Username" minlength="8" maxlength="15"
-        pattern="[a-zA-z0-9]+" value=<%=typeof username !='undefined' ? username : "" %>>
+<%- include('partials/header') %>
+	<title>Log In</title>
+<%- include('partials/nav') %>
 
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required placeholder="Password" minlength="8" maxlength="20"
-        pattern="^(?=[0-9a-zA-Z!@#$%^&*]{8,20}$)(?=[^a-z]*[a-z])(?=[^A-Z]*[A-Z])(?=[^0-9]*[0-9])(?=[^!@#$%^&*]*[!@#$%^&*]).*">
+<main>
+	<div id="form-page">
+		<form action="/login" method="post" class="needs-validation" novalidate>
+			<div class="title">
+				<h2>Log In</h2>
+			</div>
 
-    <input type="submit" value="Log In">
+			<!-- Backend validation error -->
+			<div class="text-danger hint">
+				<% if (typeof error !='undefined' ) { %>
+					<%= error %>
+				<% } %>
+			</div>
 
-    <% if (typeof error !='undefined' ) { %>
-        <%= error %>
-            <% } %>
-</form>
+			<div class="item">
+				<label for="username" class="form-label">Username</label>
+				<input type="text" name="username" class="form-control" id="username" required
+					placeholder="Username" minlength="8" maxlength="15" pattern="[a-zA-z0-9]+">
+				<div class="invalid-feedback">Username must be 8-15 alphanumeric characters</div>
+			</div>
+
+			<div class="item">
+				<label for="password" class="form-label">Password</label>
+				<input type="password" name="password" class="form-control" id="password" required
+					placeholder="Password" minlength="8" maxlength="20"
+					pattern="^(?=[0-9a-zA-Z!@#$%^&*]{8,20}$)(?=[^a-z]*[a-z])(?=[^A-Z]*[A-Z])(?=[^0-9]*[0-9])(?=[^!@#$%^&*]*[!@#$%^&*]).*">
+				<div class="invalid-feedback">
+					<div>Password must be 8-20 characters and contains:</div>
+					<div>- At least 1 lowercase character</div>
+					<div>- At least 1 uppercase character</div>
+					<div>- At least 1 digit</div>
+					<div>- At least 1 of the following characters !, @, #, $, %, ^, &, *</div>
+					<div>- No other kinds of characters</div>
+				</div>
+			</div>
+
+			<div>
+				<button type="submit" class="btn btn-primary">Log In</button>
+			</div>
+		</form>
+	</div>
+</main>
+
+<script src="/js/formValidate.js"></script>
+<%- include('partials/footer') %>

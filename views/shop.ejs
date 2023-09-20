@@ -1,0 +1,55 @@
+<%- include('partials/header') %>
+	<title>My Products</title>
+<%- include('partials/nav') %>
+
+<main>
+    <div class="main-container main-container">
+        <div class="row-2">
+            <h2>My Products</h2>
+            <a href="/shop/add" class="btn">Add New Product</a>
+        </div>
+
+        <div class="text-danger hint">
+            <% if (typeof error !='undefined' ) { %>
+                <%= error %>
+            <% } %>
+        </div>
+
+        <% if (typeof products !='undefined' ) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <% for (let i = 0; i < products.length; i++) { %>
+                        <tr>
+                            <td class="col-4">
+                                <div class="shop-product">
+                                    <img src="data:image/<%= products[i].picture.contentType %>;base64,
+                                    <%= products[i].picture.data.toString('base64') %>" alt="<%= products[i].name %>">
+                                    <div class="shop-product-info">
+                                        <p><%= products[i].name %></p>
+                                        <small>Price: $<%= products[i].price %></small>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="col-8"><%= products[i].description %></td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+            <% if (products.length == 0) { %>
+                <div class="empty">
+                    <h1>Empty</h1>
+                </div>
+            <% } %>
+        <% } %>
+    </div>
+</main>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,40 @@
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="navbar">
+                <div class="logo">
+                    <a href="/"><img src="/images/logo.png" width="125px" alt="Logo"></a>
+                </div>
+                <nav>
+                    <ul id="MenuItems">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/products">All Products</a></li>
+
+                        <% if (typeof user=='undefined') { %>
+                            <li><a href="/login">Log In</a></li>
+                            <li><a href="/register">Register</a></li>
+                        <% } else { %>
+                            <% if (user.userType=='vendor') { %>
+                                <li><a href="/shop">My Products</a></li>
+                            <% } else if (user.userType=='shipper' ) { %>
+                                <li><a href="/orders">Orders</a></li>
+                            <% } %>
+
+                            <li><a href="/account">Account</a></li>
+                            <li><a href="javascript: document.logoutForm.submit()">Log Out</a></li>
+                        <% } %>
+                    </ul>
+
+                    <form name="logoutForm" action="/logout" method="post" hidden>
+                        <button type="submit">Log Out</button>
+                    </form> 
+                </nav>
+                <% if (typeof user !='undefined' && user.userType == 'customer') { %>
+                    <a href="/cart"><img src="/images/cart.png" alt="Cart" width="30px" height="30px" /></a>
+                <% } %>
+                    <img src="/images/menu.png" onclick="menutoggle()" class="menu-icon" alt="Menu">
+            </div>
+        </div>
+    </header>

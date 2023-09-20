@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+	<title>All Products</title>
+<%- include('partials/nav') %>
+
+<main>
+    <div class="main-container main-container">
+        <div class="row-2">
+            <h2 class="col">All Products</h2>
+            <a href="#" class="btn">Filter (WIP)</a>
+        </div>
+
+        <div class="text-danger hint">
+            <% if (typeof error !='undefined' ) { %>
+                <%= error %>
+            <% } %>
+        </div>
+
+        <div class="row">
+        <% if (typeof products !='undefined' ) { %>
+            <% for (let i = 0; i < products.length; i++) { %>
+                <a href="/products/<%= products[i]._id %>" class="product col-6 col-md-4 col-lg-3">
+                    <img src="data:image/<%= products[i].picture.contentType %>;base64,
+                    <%= products[i].picture.data.toString('base64') %>" alt="<%= products[i].name %>">
+                    <h4><%= products[i].name %></h4>
+                    <p>$<%= products[i].price %></p>
+                </a>
+            <% } %>
+
+            <% if (products.length == 0) { %>
+                <div class="empty">
+                    <h1>Empty</h1>
+                </div>
+            <% } %>
+        <% } %>
+    </div></div>
+</main>
+
+<%- include('partials/footer') %>

@@ -1,118 +1,111 @@
-<form action="/register" method="post">
-    <!-- Shared fields -->
-    <label for="userType">User Type</label>
-    <select name="userType" id="userType" required onchange="formChange()">
-        <option value="" disabled <% if(typeof userType=='undefined' ) { %>
-            <%- 'selected' %>
-                <% } %>>--
-        </option>
-        <option value="vendor" <% if(typeof userType !='undefined' && userType=='vendor' ) { %>
-            <%- 'selected' %>
-                <% } %>>Vendor
-        </option>
-        <option value="customer" <% if(typeof userType !='undefined' && userType=='customer' ) { %>
-            <%- 'selected' %>
-                <% } %>>Customer
-        </option>
-        <option value="shipper" <% if(typeof userType !='undefined' && userType=='shipper' ) { %>
-            <%- 'selected' %>
-                <% } %>>Shipper
-        </option>
-    </select>
+<%- include('partials/header') %>
+	<title>Register</title>
+<%- include('partials/nav') %>
 
-    <label for="username">Username</label>
-    <input type="text" name="username" id="username" required placeholder="Username" minlength="8" maxlength="15"
-        pattern="[a-zA-z0-9]+" value=<%=typeof username !='undefined' ? username : "" %>>
+<main>
+	<div id="form-page">
+		<form action="/register" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+			<div class="title">
+				<h2>Register</h2>
+			</div>
 
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required placeholder="Password" minlength="8" maxlength="20"
-        pattern="^(?=[0-9a-zA-Z!@#$%^&*]{8,20}$)(?=[^a-z]*[a-z])(?=[^A-Z]*[A-Z])(?=[^0-9]*[0-9])(?=[^!@#$%^&*]*[!@#$%^&*]).*">
+			<!-- Backend validation error -->
+			<div class="text-danger hint">
+				<% if (typeof error !='undefined' ) { %>
+					<%= error %>
+				<% } %>
+			</div>
 
-    <label for="profilePicture">Profile Picture</label>
-    <input type="file" name="profilePicture" id="profilePicture">
+			<!-- Shared fields -->
+			<div class="item">
+				<label for="userType" class="form-label">User Type</label>
+				<select name="userType" class="form-select" id="userType" required onchange="registerForm()">
+					<option value="" disabled selected>--</option>
+					<option value="vendor">Vendor</option>
+					<option value="customer">Customer</option>
+					<option value="shipper">Shipper</option>
+				</select>
+				<div class="invalid-feedback">Please select an user type</div>
+			</div>
 
-    <!-- Vendor fields -->
-    <label class="vendor" hidden for="businessName">Business Name</label>
-    <input class="vendor" hidden type="text" name="businessName" id="businessName" placeholder="Business Name"
-        minlength="5" value=<%=typeof businessName !='undefined' ? businessName : "" %>>
+			<div class="item">
+				<label for="username" class="form-label">Username</label>
+				<input type="text" name="username" class="form-control" id="username" required
+					placeholder="Username" minlength="8" maxlength="15" pattern="[a-zA-z0-9]+"
+					onchange="registerForm()">
+				<div class="hint">Username must be 8-15 alphanumeric characters</div>
+			</div>
 
-    <label class="vendor" hidden for="businessAddress">Business Address</label>
-    <input class="vendor" hidden type="text" name="businessAddress" id="businessAddress" placeholder="Business Address"
-        minlength="5" value=<%=typeof businessAddress !='undefined' ? businessAddress : "" %>>
+			<div class="item">
+				<label for="password" class="form-label">Password</label>
+				<input type="password" name="password" class="form-control" id="password" required
+					placeholder="Password" minlength="8" maxlength="20"
+					pattern="^(?=[0-9a-zA-Z!@#$%^&*]{8,20}$)(?=[^a-z]*[a-z])(?=[^A-Z]*[A-Z])(?=[^0-9]*[0-9])(?=[^!@#$%^&*]*[!@#$%^&*]).*">
+				<div class="hint">
+					<div>Password must be 8-20 characters and contains:</div>
+					<div>- At least 1 lowercase character</div>
+					<div>- At least 1 uppercase character</div>
+					<div>- At least 1 digit</div>
+					<div>- At least 1 of the following characters !, @, #, $, %, ^, &, *</div>
+					<div>- No other kinds of characters</div>
+				</div>
+			</div>
 
-    <!-- Customer fields -->
-    <label class="customer" hidden for="name">Name</label>
-    <input class="customer" hidden type="text" name="name" id="name" placeholder="Name" minlength="5" value=<%=typeof
-        name !='undefined' ? name : "" %>>
+			<div class="item">
+				<label for="profilePicture" class="form-label">Profile Picture</label>
+				<input type="file" name="profilePicture" class="form-control" id="profilePicture" required>
+				<div class="invalid-feedback">Please select a profile picture</div>
+			</div>
 
-    <label class="customer" hidden for="address">Address</label>
-    <input class="customer" hidden type="text" name="address" id="address" placeholder="Address" minlength="5"
-        value=<%=typeof address !='undefined' ? address : "" %>>
+			<!-- Vendor fields -->
+			<div class="vendor item" hidden>
+				<label class="vendor form-label" for="businessName">Business Name</label>
+				<input class="vendor form-control" type="text" name="businessName" id="businessName"
+					placeholder="Business Name" minlength="5">
+				<div class="invalid-feedback">Business name must be at least 5 characters</div>
+			</div>
 
-    <!-- Shipper fields -->
-    <label class="shipper" hidden for="distributionHub">Distribution Hub</label>
-    <select class="shipper" hidden name="distributionHub" id="distributionHub">
-        <option value="" disabled selected>--</option>
-        <option value="" disabled <% if(typeof userType=='undefined' ) { %>
-            <%- 'selected' %>
-                <% } %>>--
-        </option>
-        <option value="hanoi" <% if(typeof userType !='undefined' && userType=='hanoi' ) { %>
-            <%- 'selected' %>
-                <% } %>>Ha Noi
-        </option>
-        <option value="danang" <% if(typeof userType !='undefined' && userType=='danang' ) { %>
-            <%- 'selected' %>
-                <% } %>>Da Nang
-        </option>
-        <option value="hcm" <% if(typeof userType !='undefined' && userType=='hcm' ) { %>
-            <%- 'selected' %>
-                <% } %>>Ho Chi Minh
-        </option>
-    </select>
+			<div class="vendor item" hidden>
+				<label class="vendor form-label" for="businessAddress">Business Address</label>
+				<input class="vendor form-control" type="text" name="businessAddress" id="businessAddress"
+					placeholder="Business Address" minlength="5">
+				<div class="invalid-feedback">Business address must be at least 5 characters</div>
+			</div>
 
-    <input type="submit" value="Register">
+			<!-- Customer fields -->
+			<div class="customer item" hidden>
+				<label class="customer form-label" for="name">Name</label>
+				<input class="customer form-control" type="text" name="name" id="name" placeholder="Name"
+					minlength="5">
+				<div class="invalid-feedback">Name must be at least 5 characters</div>
+			</div>
 
-    <% if (typeof error !='undefined' ) { %>
-        <%= error %>
-            <% } %>
-</form>
+			<div class="customer item" hidden>
+				<label class="customer form-label" for="address">Address</label>
+				<input class="customer form-control" type="text" name="address" id="address" placeholder="Address"
+					minlength="5">
+				<div class="invalid-feedback">Address must be at least 5 characters</div>
+			</div>
 
-<script>
-    function formChange() {
-        const userType = document.getElementById('userType').value;
-        const vendors = document.querySelectorAll('.vendor');
-        const customers = document.querySelectorAll('.customer');
-        const shippers = document.querySelectorAll('.shipper');
+			<!-- Shipper fields -->
+			<div class="shipper item" hidden>
+				<label class="shipper form-label" for="distributionHub">Distribution Hub</label>
+				<select class="shipper form-select" name="distributionHub" id="distributionHub">
+					<option value="" disabled selected>--</option>
+					<% for (let i = 0; i < possibleDistributionHubs.length; i++) { %>
+						<option value="<%= possibleDistributionHubs[i] %>"><%= possibleDistributionHubs[i] %></option>
+					<% } %>
+				</select>
+				<div class="invalid-feedback">Please select a distribution hub</div>
+			</div>
 
-        disableElements(vendors);
-        disableElements(customers);
-        disableElements(shippers);
+			<div>
+				<button type="submit" class="btn btn-primary" id="btn-register" disabled>Register</button>
+			</div>
+		</form>
+	</div>
+</main>
 
-        if (userType == 'vendor') {
-            enableElements(vendors);
-        } else if (userType == 'customer') {
-            enableElements(customers);
-        } else if (userType == 'shipper') {
-            enableElements(shippers);
-        }
-    }
-
-    function enableElements(elements) {
-        elements.forEach(element => {
-            element.removeAttribute('hidden');
-            if (element.tagName == 'INPUT' || element.tagName == 'SELECT') {
-                element.setAttribute('required', '');
-            }
-        });
-    }
-
-    function disableElements(elements) {
-        elements.forEach(element => {
-            element.setAttribute('hidden', '');
-            if (element.tagName == 'INPUT' || element.tagName == 'SELECT') {
-                element.removeAttribute('required');
-            }
-        });
-    }
-</script>
+<script src="/js/registerForm.js"></script>
+<script src="/js/formValidate.js"></script>
+<%- include('partials/footer') %>
