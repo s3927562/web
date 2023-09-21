@@ -34,7 +34,8 @@ const userSchema = new mongoose.Schema({
             },
             message: "Username must be 8-15 alphanumeric characters"
         },
-        unique: true // Uniqueness is also managed by Passport
+        // Uniqueness is managed by Passport
+        unique: true // This is for indexing purpose only
     },
     profilePicture: {
         type: {

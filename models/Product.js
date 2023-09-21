@@ -7,12 +7,12 @@ const productSchema = new mongoose.Schema({
     vendor: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
+        required: [true, "A product must be associated with a vendor"],
         validate: {
-            validator: async function isExist(vendor) {
+            validator: async function isVendor(vendor) {
                 const user = await User.findOne({ _id: vendor._id });
                 if (user) {
-                    return true;
+                    return user.userType == 'vendor';
                 }
                 return false;
             },

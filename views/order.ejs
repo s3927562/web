@@ -1,0 +1,70 @@
+<%- include('partials/header') %>
+	<title>Order for <%= order.customer.name %></title>
+<%- include('partials/nav') %>
+
+<main>
+    <div class="main-container">
+        <div class="row-2">
+            <h2>Order for <%= order.customer.name %></h2>
+        </div>
+        <div class="row-2">
+            <h3>Address: <%= order.customer.address %></h3>
+        </div>
+
+        <div class="text-danger hint">
+            <% if (typeof error !='undefined' ) { %>
+                <%= error %>
+            <% } %>
+        </div>
+
+        <% if (typeof order !='undefined' ) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <% for (let i = 0; i < order.products.length; i++) { %>
+                        <tr>
+                            <td class="col-8">
+                                <div class="shop-product">
+                                    <img src="data:image/<%= order.products[i].picture.contentType %>;base64,
+                                    <%= order.products[i].picture.data.toString('base64') %>" alt="<%= order.products[i].name %>">
+                                    <div class="shop-product-info">
+                                        <p><%= order.products[i].name %></p>
+                                        <small>
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="col-4">$<%= order.products[i].price %></td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+
+            <div class="total-price">
+                <table>
+                    <tr>
+                        <td>Total</td>
+                        <td>$<%= order.total %></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="total-price">
+                <form action="/orders/<%= order._id %>/delivered" method="post" id="btn-deliver">
+                    <button type="submit" class="btn">Deliver</button>
+                </form>
+                <form action="/orders/<%= order._id %>/canceled" method="post">
+                    <button type="submit" class="btn" id="btn-cancel">Cancel</button>
+                </form>
+            </div>
+        <% } %>
+    </div>
+</main>
+
+<%- include('partials/footer') %>

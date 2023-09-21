@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+	<title>Orders</title>
+<%- include('partials/nav') %>
+
+<main>
+    <div class="main-container">
+        <div class="row-2">
+            <h2>Orders</h2>
+        </div>
+
+        <div class="text-danger hint">
+            <% if (typeof error !='undefined' ) { %>
+                <%= error %>
+            <% } %>
+        </div>
+
+        <% if (typeof orders !='undefined' ) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <% for (let i = 0; i < orders.length; i++) { %>
+                        <tr>
+                            <td class="col-8">
+                                <a class="shop-product" href="/orders/<%= orders[i]._id %>">
+                                    <img src="data:image/<%= orders[i].customer.profilePicture.contentType %>;base64,
+                                    <%= orders[i].customer.profilePicture.data.toString('base64') %>" alt="<%= orders[i].customer.name %>">
+                                    <div class="shop-product-info">
+                                        <h4><%= orders[i].customer.name %></h4>
+                                        <p><%= orders[i].customer.address %></p>
+                                    </div>
+                                </a>
+                            </td>
+
+                            <td class="col-4">$<%= orders[i].total %></td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+            <% if (orders.length == 0) { %>
+                <div class="empty">
+                    <h1>Empty</h1>
+                </div>
+            <% } %>
+        <% } %>
+    </div>
+</main>
+
+<%- include('partials/footer') %>

@@ -23,8 +23,9 @@ const express = require('express'),
     passportLocalMongoose = require('passport-local-mongoose'),
     connectEnsureLogin = require('connect-ensure-login'),
     User = require('./models/User'),
-    Product = require('./models/Product');
-
+    Product = require('./models/Product'),
+    Cart = require('./models/Cart'),
+    Order = require('./models/Order');
 
 // Mongoose Database
 mongoose.connect('mongodb+srv://s3927562:yGy6bwv%21yiCZaAMW@full-stack-web-applicat.wj1vg7k.mongodb.net/?retryWrites=true&w=majority&appName=AtlasApp')
@@ -41,7 +42,7 @@ app.use(expressFileUpload());  // Parse file uploads
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-// Sessions with Passport
+// Authentication and Sessions with Passport
 app.use(expressSession({
     secret: 'WnFKN1v_gUcgmUVZnjjjGXGwk557zBSO',
     resave: 'false',
@@ -55,6 +56,7 @@ passport.use(new passportLocal(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// Response local variables
 app.use(function (req, res, next) {
     res.locals.user = req.user;
     res.locals.possibleDistributionHubs = User.possibleDistributionHubs();
@@ -62,11 +64,11 @@ app.use(function (req, res, next) {
 });
 
 // Routing
+// Static pages
 app.get('/', (req, res) => {
     res.render('index');
 });
 
-// Static pages
 app.get('/about', (req, res) => {
     res.render('about');
 });
@@ -83,7 +85,7 @@ app.get('/help', (req, res) => {
     res.render('help');
 });
 
-// Authentication
+// Register
 app.get('/register', (req, res) => {
     res.render('register');
 });
@@ -120,16 +122,31 @@ app.post('/register', (req, res) => {
         return res.render('register', { error: errMsg });
     }
 
+    // At least 1 lowercase, 1 uppercase, 1 digit, 1 symbol, no other types of characters
     const passwordRegex = /^(?=[0-9a-zA-Z!@#$%^&*]{8,20}$)(?=[^a-z]*[a-z])(?=[^A-Z]*[A-Z])(?=[^0-9]*[0-9])(?=[^!@#$%^&*]*[!@#$%^&*]).*/;
 
     if (passwordRegex.test(req.body.password)) {
         User.register(user, req.body.password)
             .then((user) => {
+                // Create a cart if new user is a customer
+                if (user.userType == 'customer') {
+                    const cart = new Cart({
+                        customer: user._id,
+                    });
+                    cart.save();
+                }
+
                 req.logIn(user, (err) => {
                     if (err) {
                         return res.render('register', { error: err['message'] });
                     }
-                    return res.redirect('/account');
+
+                    if (user.userType == 'vendor') {
+                        return res.redirect('/shop');
+                    } else if (user.userType == 'shipper') {
+                        return res.redirect('/orders');
+                    }
+                    return res.redirect('/products');
                 });
             })
             .catch((err) => {
@@ -152,6 +169,7 @@ app.post('/register', (req, res) => {
     }
 });
 
+// Log in and log out
 app.get('/login', (req, res) => {
     res.render('login');
 });
@@ -190,10 +208,12 @@ app.post('/logout', function (req, res, next) {
     res.redirect('/');
 });
 
+// Account info
 app.get('/account', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
     res.render('account');
 });
 
+// Product pages (multiple and single)
 app.get('/products', (req, res) => {
     Product.find({})
         .then((products) => res.render('products', { products: products }))
@@ -201,32 +221,34 @@ app.get('/products', (req, res) => {
 });
 
 app.get('/products/:id', (req, res) => {
-    Product.findOne({ _id: req.params.id }).populate('vendor', 'businessName')
+    Product.findById(req.params.id).populate('vendor', 'businessName')
         .then((product) => res.render('product', { product: product }))
-        .catch((error) => res.redirect('/not-found'));
+        .catch(() => res.render('not-found'));
 });
 
-// Vendor routes
+// Vendor: View own products
 app.get('/shop', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
     if (req.user.userType != 'vendor') {
-        return res.redirect('/forbidden');
+        return res.render('forbidden');
     }
     Product.find({ vendor: req.user._id })
         .then((products) => res.render('shop', { products: products }))
         .catch((error) => res.render('shop', { error: error }));
 });
 
+// Vendor: Add new product
 app.get('/shop/add', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
     if (req.user.userType != 'vendor') {
-        return res.redirect('/forbidden');
+        return res.render('forbidden');
     }
     res.render('add-product');
 });
 
 app.post('/shop/add', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
     if (req.user.userType != 'vendor') {
-        return res.redirect('/forbidden');
+        return res.render('forbidden');
     }
+
     const product = new Product({
         vendor: req.user._id,
         name: req.body.name,
@@ -235,7 +257,7 @@ app.post('/shop/add', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) =>
         description: req.body.description,
     });
     product.save()
-        .then((product) => res.redirect('/shop'))
+        .then(() => res.redirect('/shop'))
         .catch((err) => {
             var errMsg = "";
             if ('errors' in err) { // MongoDB validation errors
@@ -250,34 +272,114 @@ app.post('/shop/add', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) =>
         });
 });
 
-// Customer routes
-app.get('cart', (req, res) => {
-    res.render('cart');
+// Customer cart
+app.get('/cart', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
+    if (req.user.userType != 'customer') {
+        return res.render('forbidden');
+    }
+
+    Cart.findOne({ customer: req.user._id }).populate('products')
+        .then((cart) => res.render('cart', { cart: cart }))
+        .catch((error) => console.log(error));
 });
 
-app.post('cart/add/:id', (req, res) => {
-    res.render('cart');
+app.post('/cart/add/:id', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
+    if (req.user.userType != 'customer') {
+        return res.render('forbidden');
+    }
+
+    Cart.findOne({ customer: req.user._id })
+        .then((cart) => {
+            cart.products.push(req.params.id);
+            cart.save()
+                .then(() => res.redirect('/cart'));
+        })
+        .catch((error) => res.render('cart', { error: error }));
 });
 
-app.post('cart/remove/:id', (req, res) => {
-    res.render('cart');
+app.post('/cart/remove/:index', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
+    if (req.user.userType != 'customer') {
+        return res.render('forbidden');
+    }
+
+    Cart.findOne({ customer: req.user._id })
+        .then((cart) => {
+            cart.products.splice(req.params.index, 1);
+            cart.save()
+                .then(() => res.redirect('/cart'));
+        })
+        .catch((error) => res.render('cart', { error: error }));
+});
+
+app.post('/cart/order', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
+    if (req.user.userType != 'customer') {
+        return res.render('forbidden');
+    }
+
+    Cart.findOne({ customer: req.user._id })
+        .then((cart) => {
+            const order = new Order({
+                customer: cart.customer,
+                products: cart.products,
+                distributionHub: res.locals.possibleDistributionHubs[Math.floor(Math.random() * res.locals.possibleDistributionHubs.length)]
+            });
+
+            order.save()
+                .then(() => {
+                    cart.products = [];
+                    cart.save()
+                        .then(() => res.redirect('/cart'));
+                });
+        })
+        .catch((error) => res.render('cart', { error: error }));
+});
+
+// Shipper orders
+app.get('/orders', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
+    if (req.user.userType != 'shipper') {
+        return res.render('forbidden');
+    }
+
+    Order.find({ distributionHub: req.user.distributionHub, status: 'active' })
+        .populate('customer', 'name profilePicture address')
+        .populate('products')
+        .then((orders) => res.render('orders', { orders: orders }))
+        .catch((error) => res.render('orders', { error: error }));
+});
+
+app.get('/orders/:id', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
+    if (req.user.userType != 'shipper') {
+        return res.render('forbidden');
+    }
+
+    Order.findOne({ _id: req.params.id, distributionHub: req.user.distributionHub, status: 'active' })
+        .populate('customer', 'name address')
+        .populate('products')
+        .then((order) => res.render('order', { order: order }))
+        .catch((error) => res.render('order', { error: error }));
+});
+
+app.post('/orders/:id/:status', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
+    if (req.user.userType != 'shipper') {
+        return res.render('forbidden');
+    }
+
+    Order.findOne({ _id: req.params.id, distributionHub: req.user.distributionHub, status: 'active' })
+        .then((order) => {
+            order.status = req.params.status;
+            order.save()
+                .then(() => res.redirect('/orders'));
+        })
+        .catch((error) => res.render('order', { error: error }));
 });
 
 // Catch invalid routes
-app.get('/not-found', (req, res) => {
+app.get('*', (req, res) => {
     res.render('not-found');
 });
 
-app.get('/forbidden', (req, res) => {
-    res.render('forbidden');
-});
-
-app.get('*', (req, res) => {
-    res.redirect('/not-found');
-});
-
 app.post('*', (req, res) => {
-    res.redirect('/forbidden');
+    res.render('forbidden');
 });
 
 // Run

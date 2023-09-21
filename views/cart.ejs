@@ -1,0 +1,72 @@
+<%- include('partials/header') %>
+	<title>Cart</title>
+<%- include('partials/nav') %>
+
+<main>
+    <div class="main-container">
+        <div class="row-2">
+            <h2>Cart</h2>
+        </div>
+
+        <div class="text-danger hint">
+            <% if (typeof error !='undefined' ) { %>
+                <%= error %>
+            <% } %>
+        </div>
+
+        <% if (typeof cart !='undefined' ) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <% for (let i = 0; i < cart.products.length; i++) { %>
+                        <tr>
+                            <td class="col-8">
+                                <div class="shop-product">
+                                    <img src="data:image/<%= cart.products[i].picture.contentType %>;base64,
+                                    <%= cart.products[i].picture.data.toString('base64') %>" alt="<%= cart.products[i].name %>">
+                                    <div class="shop-product-info">
+                                        <p><%= cart.products[i].name %></p>
+                                        <small>
+                                            <form action="/cart/remove/<%= i %>" method="post">
+                                                <button type="submit" class="remove">Remove</button>
+                                            </form>
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="col-4">$<%= cart.products[i].price %></td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+            <% if (cart.products.length == 0) { %>
+                <div class="empty">
+                    <h1>Empty</h1>
+                </div>
+            <% } else { %>
+                <div class="total-price">
+                    <table>
+                        <tr>
+                            <td>Total</td>
+                            <td>$<%= cart.total %></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="total-price">
+                    <form action="/cart/order" method="post">
+                        <button type="submit" class="btn">Order</button>
+                    </form>
+                </div>
+            <% } %>
+        <% } %>
+    </div>
+</main>
+
+<%- include('partials/footer') %>

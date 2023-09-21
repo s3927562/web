@@ -210,7 +210,7 @@ footer ul {
 .main-container {
 	min-height: 37.9vh;
 	max-width: 1080px;
-	margin: auto;
+	margin: 80px auto;
 	padding-left: 10px;
 	padding-right: 10px;
 }
@@ -261,11 +261,6 @@ select {
 	color: #fff;
 }
 
-
-.main-container {
-	margin: 80px auto;
-}
-
 table {
 	width: 100%;
 	border-collapse: collapse;
@@ -299,9 +294,14 @@ td input {
 	padding: 5px;
 }
 
-td a {
+td .remove {
 	color: #ff523b;
+}
+
+.shop-product-info button {
 	font-size: 12px;
+	background-color: transparent;
+	border: 0;
 }
 
 td img {
@@ -331,6 +331,14 @@ td img {
 	border-top: 3px solid #ff523b;
 	width: 100%;
 	max-width: 350px;
+}
+
+.total-price #btn-deliver {
+	margin-right: 10px
+}
+
+.total-price #btn-cancel {
+	background-color: rgb(168, 168, 168);
 }
 
 td:last-child {
