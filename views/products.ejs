@@ -8,19 +8,21 @@
             <h2 class="col">All Products</h2>
         </div>
 
-        <form action="/products" method="get" class="needs-validation" id="filter-form">
+        <form action="/products" method="get" class="needs-validation" id="filter-form" novalidate>
             <div class="row">
                 <div class="col-md-6 col-lg-3">
-                    <label for="productName">Product Name</label>
-                    <input type="text" name="productName" id="productName">
+                    <label for="productName" class="form-label">Product Name</label>
+                    <input type="text" name="productName" class="form-control" id="productName">
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <label for="minPrice">Minimum Price</label>
-                    <input type="text" name="minPrice" id="minPrice">
+                    <label for="minPrice" class="form-label">Minimum Price</label>
+                    <input type="text" name="minPrice" class="form-control" id="minPrice" pattern="^\d*(\.\d{0,2})?$">
+                    <div class="invalid-feedback">Price must be a positive number with maximum 2 decimal places</div>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <label for="maxPrice">Maximum Price</label>
-                    <input type="text" name="maxPrice" id="maxPrice">
+                    <label for="maxPrice" class="form-label">Maximum Price</label>
+                    <input type="text" name="maxPrice" class="form-control" id="maxPrice" pattern="^\d*(\.\d{0,2})?$">
+                    <div class="invalid-feedback">Price must be a positive number with maximum 2 decimal places</div>
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <button type="submit" class="btn">Filter</button>
@@ -54,4 +56,5 @@
     </div></div>
 </main>
 
+<script src="/js/formValidate.js"></script>
 <%- include('partials/footer') %>

@@ -522,6 +522,6 @@ form .btn {
 	text-align: center;
 }
 
-#filter-form .row input {
-	margin: 10px 0;
+#filter-form {
+	margin-bottom: 20px;
 }

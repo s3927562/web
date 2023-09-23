@@ -217,21 +217,21 @@ app.get('/account', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
 app.get('/products', (req, res) => {
     var query = {};
 
-    if (typeof req.query.productName != 'undefined' && req.query.productName != '') {
+    if (typeof req.query.productName != 'undefined') {
         query.name = {
             "$regex": req.query.productName,
             "$options": "i"
         };
     }
 
-    if (typeof req.query.maxPrice != 'undefined' && req.query.maxPrice != '') {
+    if (!isNaN(req.query.maxPrice) && req.query.maxPrice != '') {
         if (typeof query.price == 'undefined') {
             query.price = {};
         }
         query.price.$lte = req.query.maxPrice;
     }
 
-    if (typeof req.query.minPrice != 'undefined' && req.query.minPrice != '') {
+    if (!isNaN(req.query.minPrice) && req.query.minPrice != '') {
         if (typeof query.price == 'undefined') {
             query.price = {};
         }
