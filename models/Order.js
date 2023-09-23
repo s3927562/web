@@ -5,7 +5,7 @@ const mongoose = require('mongoose'),
 
 // Define schema
 const orderSchema = new mongoose.Schema({
-    customer: {
+    customer: { // Customer object id to retrieve customer info
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: [true, "An order must be associated with a customer"],
@@ -61,6 +61,8 @@ const orderSchema = new mongoose.Schema({
         total: {
             get() {
                 var total = 0;
+
+                // Get the price of all products in the array then add altogether
                 this.populate('products.product', 'price');
                 for (let i = 0; i < this.products.length; i++) {
                     total += this.products[i].price;

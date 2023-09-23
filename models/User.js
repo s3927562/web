@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema({
         // Uniqueness is managed by Passport
         unique: true // This is for indexing purpose only
     },
-    profilePicture: {
+    profilePicture: { // Required
         type: {
             data: Buffer,
             contentType: String
@@ -118,7 +118,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // Schema plugins
-userSchema.plugin(passportLocalMongoose); // Connect Passport with MongooseDB\
+userSchema.plugin(passportLocalMongoose); // Connect Passport with MongooseDB
 
 // Export model from the schema
 module.exports = mongoose.model('User', userSchema);

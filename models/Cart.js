@@ -21,7 +21,7 @@ const cartSchema = new mongoose.Schema({
                 message: "Customer doesn't exist"
             },
             {
-                validator: async function isUnique(customer) {
+                validator: async function isUnique(customer) { // Only 1 cart per customer
                     const cart = await this.constructor.findOne({ customer: customer });
                     if (cart) {
                         return cart._id.equals(this._id);
@@ -54,6 +54,8 @@ const cartSchema = new mongoose.Schema({
         total: {
             get() {
                 var total = 0;
+
+                // Get the price of all products in the array then add altogether
                 this.populate('products.product', 'price');
                 for (let i = 0; i < this.products.length; i++) {
                     total += this.products[i].price;

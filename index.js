@@ -13,6 +13,7 @@ https://stackoverflow.com/questions/23114374/file-uploading-with-express-4-0-req
 https://stackoverflow.com/questions/37183766/how-to-get-the-session-value-in-ejs
 https://stackoverflow.com/questions/10640749/access-the-list-of-valid-values-for-an-enum-field-in-a-mongoose-js-schema
 https://stackoverflow.com/questions/24072333/difference-between-assigning-to-res-and-res-locals-in-node-js-express
+https://stackoverflow.com/questions/13335881/redirecting-to-previous-page-after-authentication-in-node-js-using-passport-js
 */
 
 // Import modules
@@ -143,6 +144,7 @@ app.post('/register', (req, res) => {
                         return res.render('register', { error: err['message'] });
                     }
 
+                    // Redirect user to corresponding default pages
                     if (user.userType == 'vendor') {
                         return res.redirect('/shop');
                     } else if (user.userType == 'shipper') {
@@ -190,6 +192,8 @@ app.post('/login', (req, res, next) => {
             if (err) {
                 return res.render('login', { error: err['message'] });
             }
+
+            // Redirect user to corresponding default pages if there is no returning page
             if (typeof returnTo != 'undefined') {
                 return res.redirect(returnTo);
             } else if (user.userType == 'vendor') {
@@ -205,7 +209,6 @@ app.post('/login', (req, res, next) => {
 app.post('/logout', function (req, res, next) {
     req.logout(function (err) {
         if (err) { return next(err); }
-        res.locals.user = undefined;
     });
     res.redirect('/');
 });
@@ -218,14 +221,15 @@ app.get('/account', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
 // Product pages (multiple and single)
 app.get('/products', (req, res) => {
     var query = {};
-
+    // Filter product name
     if (typeof req.query.productName != 'undefined') {
         query.name = {
-            "$regex": req.query.productName,
-            "$options": "i"
+            "$regex": req.query.productName, // Contains the query string
+            "$options": "i" // Case-insensitive
         };
     }
 
+    // Max product price
     if (!isNaN(req.query.maxPrice) && req.query.maxPrice != '') {
         if (typeof query.price == 'undefined') {
             query.price = {};
@@ -233,6 +237,7 @@ app.get('/products', (req, res) => {
         query.price.$lte = req.query.maxPrice;
     }
 
+    // Min product price
     if (!isNaN(req.query.minPrice) && req.query.minPrice != '') {
         if (typeof query.price == 'undefined') {
             query.price = {};
@@ -246,6 +251,7 @@ app.get('/products', (req, res) => {
 });
 
 app.get('/products/:id', (req, res) => {
+    // Retrieve the product with id then get the vendor's name
     Product.findById(req.params.id).populate('vendor', 'businessName')
         .then((product) => res.render('product', { product: product }))
         .catch(() => res.render('not-found'));
@@ -256,6 +262,8 @@ app.get('/shop', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
     if (req.user.userType != 'vendor') {
         return res.render('forbidden');
     }
+
+    // Retrieve all products using the vendor's account id
     Product.find({ vendor: req.user._id })
         .then((products) => res.render('shop', { products: products }))
         .catch((error) => res.render('shop', { error: error }));
@@ -274,6 +282,7 @@ app.post('/shop/add', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) =>
         return res.render('forbidden');
     }
 
+    // Create a new product document then save it to the collection
     const product = new Product({
         vendor: req.user._id,
         name: req.body.name,
@@ -303,6 +312,7 @@ app.get('/cart', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
         return res.render('forbidden');
     }
 
+    // Retrieve the customer's cart with the customer's id
     Cart.findOne({ customer: req.user._id }).populate('products')
         .then((cart) => res.render('cart', { cart: cart }))
         .catch((error) => console.log(error));
@@ -313,6 +323,7 @@ app.post('/cart/add/:id', connectEnsureLogin.ensureLoggedIn('/login'), (req, res
         return res.render('forbidden');
     }
 
+    // Retrieve the customer's cart then add the product id to the list of products
     Cart.findOne({ customer: req.user._id })
         .then((cart) => {
             cart.products.push(req.params.id);
@@ -327,6 +338,7 @@ app.post('/cart/remove/:index', connectEnsureLogin.ensureLoggedIn('/login'), (re
         return res.render('forbidden');
     }
 
+    // Retrieve the customer's cart then remove the product at a certain index
     Cart.findOne({ customer: req.user._id })
         .then((cart) => {
             cart.products.splice(req.params.index, 1);
@@ -341,6 +353,7 @@ app.post('/cart/order', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) 
         return res.render('forbidden');
     }
 
+    // Retrieve the customer's cart, copy all fields to an order and randomly pick a distribution hub for the order
     Cart.findOne({ customer: req.user._id })
         .then((cart) => {
             const order = new Order({
@@ -349,6 +362,7 @@ app.post('/cart/order', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) 
                 distributionHub: res.locals.possibleDistributionHubs[Math.floor(Math.random() * res.locals.possibleDistributionHubs.length)]
             });
 
+            // Empty the customer's cart then save it back
             order.save()
                 .then(() => {
                     cart.products = [];
@@ -365,6 +379,8 @@ app.get('/orders', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
         return res.render('forbidden');
     }
 
+    // Retrieve all orders that match the shipper's distribution hub
+    // then populate the fields for the customer and products linked to them
     Order.find({ distributionHub: req.user.distributionHub, status: 'active' })
         .populate('customer', 'name profilePicture address')
         .populate('products')
@@ -377,6 +393,7 @@ app.get('/orders/:id', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) =
         return res.render('forbidden');
     }
 
+    // Retrieve the active order then populate the fields for the customer and products linked to it
     Order.findOne({ _id: req.params.id, distributionHub: req.user.distributionHub, status: 'active' })
         .populate('customer', 'name address')
         .populate('products')
@@ -389,6 +406,7 @@ app.post('/orders/:id/:status', connectEnsureLogin.ensureLoggedIn('/login'), (re
         return res.render('forbidden');
     }
 
+    // Retrieve the active order, change the status then save it back
     Order.findOne({ _id: req.params.id, distributionHub: req.user.distributionHub, status: 'active' })
         .then((order) => {
             order.status = req.params.status;

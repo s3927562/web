@@ -4,7 +4,7 @@ const mongoose = require('mongoose'),
 
 // Define schema
 const productSchema = new mongoose.Schema({
-    vendor: {
+    vendor: { // Vendor object id to get vendor info
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: [true, "A product must be associated with a vendor"],
