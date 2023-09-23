@@ -28,7 +28,7 @@ const express = require('express'),
     Order = require('./models/Order');
 
 // Mongoose Database
-mongoose.connect('mongodb+srv://s3927562:yGy6bwv%21yiCZaAMW@full-stack-web-applicat.wj1vg7k.mongodb.net/?retryWrites=true&w=majority&appName=AtlasApp')
+mongoose.connect('mongodb+srv://s3927562:yGy6bwv%21yiCZaAMW@full-stack-web-applicat.wj1vg7k.mongodb.net/test?retryWrites=true&w=majority&appName=AtlasApp')
     .then(() => console.log('Connected to MongoDB Atlas'))
     .catch((error) => console.log(error.message));
 
