@@ -215,7 +215,30 @@ app.get('/account', connectEnsureLogin.ensureLoggedIn('/login'), (req, res) => {
 
 // Product pages (multiple and single)
 app.get('/products', (req, res) => {
-    Product.find({})
+    var query = {};
+
+    if (typeof req.query.productName != 'undefined' && req.query.productName != '') {
+        query.name = {
+            "$regex": req.query.productName,
+            "$options": "i"
+        };
+    }
+
+    if (typeof req.query.maxPrice != 'undefined' && req.query.maxPrice != '') {
+        if (typeof query.price == 'undefined') {
+            query.price = {};
+        }
+        query.price.$lte = req.query.maxPrice;
+    }
+
+    if (typeof req.query.minPrice != 'undefined' && req.query.minPrice != '') {
+        if (typeof query.price == 'undefined') {
+            query.price = {};
+        }
+        query.price.$gte = req.query.minPrice;
+    }
+
+    Product.find(query)
         .then((products) => res.render('products', { products: products }))
         .catch((error) => res.render('products', { error: error }));
 });

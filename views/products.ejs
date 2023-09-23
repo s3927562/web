@@ -6,8 +6,27 @@
     <div class="main-container">
         <div class="row-2">
             <h2 class="col">All Products</h2>
-            <a href="#" class="btn">Filter (WIP)</a>
         </div>
+
+        <form action="/products" method="get" class="needs-validation" id="filter-form">
+            <div class="row">
+                <div class="col-md-6 col-lg-3">
+                    <label for="productName">Product Name</label>
+                    <input type="text" name="productName" id="productName">
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <label for="minPrice">Minimum Price</label>
+                    <input type="text" name="minPrice" id="minPrice">
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <label for="maxPrice">Maximum Price</label>
+                    <input type="text" name="maxPrice" id="maxPrice">
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <button type="submit" class="btn">Filter</button>
+                </div>
+            </div>
+        </form>
 
         <div class="text-danger hint">
             <% if (typeof error !='undefined' ) { %>

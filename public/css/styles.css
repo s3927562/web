@@ -521,3 +521,7 @@ form .btn {
 	padding-top: 100px;
 	text-align: center;
 }
+
+#filter-form .row input {
+	margin: 10px 0;
+}
