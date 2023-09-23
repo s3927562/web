@@ -2,8 +2,6 @@
 const mongoose = require('mongoose'),
     passportLocalMongoose = require('passport-local-mongoose');
 
-var possibleDistributionHubs = ['Ha Noi', 'Da Nang', 'Ho Chi Minh'];
-
 // Define schema
 const userSchema = new mongoose.Schema({
     // Shared fields
@@ -109,19 +107,13 @@ const userSchema = new mongoose.Schema({
     distributionHub: { // Required if is shipper
         type: String,
         enum: {
-            values: possibleDistributionHubs,
+            values: ['Ha Noi', 'Da Nang', 'Ho Chi Minh'],
             message: "{VALUE} is not a valid distribution hub"
         },
         required: [
             function isRequired() { return this.userType == 'shipper'; },
             "Distribution hub is required"
         ]
-    }
-}, {
-    statics: {
-        possibleDistributionHubs() {
-            return possibleDistributionHubs;
-        }
     }
 });
 

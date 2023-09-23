@@ -11,6 +11,8 @@ https://www.geeksforgeeks.org/node-js-authentication-using-passportjs-and-passpo
 https://stackoverflow.com/questions/21855650/passport-authenticate-callback-is-not-passed-req-and-res
 https://stackoverflow.com/questions/23114374/file-uploading-with-express-4-0-req-files-undefined
 https://stackoverflow.com/questions/37183766/how-to-get-the-session-value-in-ejs
+https://stackoverflow.com/questions/10640749/access-the-list-of-valid-values-for-an-enum-field-in-a-mongoose-js-schema
+https://stackoverflow.com/questions/24072333/difference-between-assigning-to-res-and-res-locals-in-node-js-express
 */
 
 // Import modules
@@ -59,7 +61,7 @@ passport.deserializeUser(User.deserializeUser());
 // Response local variables
 app.use(function (req, res, next) {
     res.locals.user = req.user;
-    res.locals.possibleDistributionHubs = User.possibleDistributionHubs();
+    res.locals.possibleDistributionHubs = User.schema.path('distributionHub').enumValues;
     next();
 });
 
