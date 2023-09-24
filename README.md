@@ -4,31 +4,27 @@ https://github.com/s3927562/web
 # Video demonstration
 
 # Test accounts
-type: vendor,
+## Vendors
 username: vendorONE,
 password: secureP4$$
 
-type: vendor,
 username: vendor2WO,
 password: qw12QW!@
 
-type: customer,
+## Customers
 username: customerPending,
 password: orderUnf1n!
 
-type: customer,
 username: wealthyd,
 password: manyOrders4!
 
-type: shipper,
+## Shippers
 username: shipperHN,
 password: shipper8^N
 
-type: shipper,
 username: shipperHCM,
 password: 58i@HAXM
 
-type: shipper,
 username: shipperDN,
 password: 45drYG%&
 
