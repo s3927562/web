@@ -1,3 +1,9 @@
+# GitHub Repo
+https://github.com/s3927562/web
+
+# Video demonstration
+
+# Test accounts
 type: vendor
 username: vendorONE
 password: secureP4$$
@@ -25,3 +31,7 @@ password: 58i@HAXM
 type: shipper
 username: shipperDN
 password: 45drYG%&
+
+# Starting website
+npm i
+node index.js
