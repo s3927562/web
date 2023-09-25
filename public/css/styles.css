@@ -1,3 +1,11 @@
+/* RMIT University Vietnam
+  Course: COSC2430 Web Programming
+  Semester: 2023B
+  Assessment: Assignment 2
+  Author: Tran Thanh Tung, Nguyen Trung Tin, Le Minh Tan
+  ID: s3927562, s3988418, s3911653
+  Acknowledgement: RMIT University, COSC2430 Course, Week 1 - 12 Lectures */
+  
 * {
 	margin: 0;
 	padding: 0;
@@ -379,8 +387,8 @@ form .btn {
 }
 
 .single-product .fa {
-  color: #ff523b;
-  margin-left: 10px;
+	color: #ff523b;
+	margin-left: 10px;
 }
 
 @media only screen and (max-width: 768px) {
@@ -524,4 +532,8 @@ form .btn {
 
 #filter-form {
 	margin-bottom: 20px;
+}
+
+#product-detail-image {
+	width: 100%;
 }

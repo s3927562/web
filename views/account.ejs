@@ -1,13 +1,26 @@
-<%- include('partials/header') %>
+<!--  RMIT University Vietnam
+  Course: COSC2430 Web Programming
+  Semester: 2023B
+  Assessment: Assignment 2
+  Author: Tran Thanh Tung, Nguyen Trung Tin, Le Minh Tan
+  ID: s3927562, s3988418, s3911653
+  Acknowledgement: RMIT University, COSC2430 Course, Week 1 - 12 Lectures -->
+  <%- include('partials/header') %>
 	<title>Account</title>
 <%- include('partials/nav') %>
 
 <main>
     <div id="form-page">
-        <form novalidate>
+        <form action="/account/update" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
             <div class="title">
                 <h2>Account</h2>
             </div>
+
+			<div class="text-danger hint">
+				<% if (typeof error !='undefined' ) { %>
+					<%= error %>
+				<% } %>
+			</div>
 
             <div class="item">
                 <label for="username" class="form-label">Username</label>
@@ -17,8 +30,14 @@
             <div class="item">
                 <label for="profilePicture" class="form-label">Profile Picture</label>
                 <img src="data:image/<%= user.profilePicture.contentType %>;base64,
-                    <%= user.profilePicture.data.toString('base64') %>" alt="Profile Picture" id="profilePicture">
+                    <%= user.profilePicture.data.toString('base64') %>" alt="Profile Picture" id="profilePictureCurrent">
             </div>
+
+			<div class="item">
+				<input type="file" name="profilePicture" class="form-control" id="profilePicture" required>
+				<div class="invalid-feedback">Please select a profile picture</div>
+                <button type="submit" class="btn">Update</button>
+			</div>
 
             <% if (user.userType == 'vendor') { %>
                 <div class="item">
@@ -59,4 +78,6 @@
         </form>
     </div>
 </main>
+
+<script src="/js/formValidate.js"></script>
 <%- include('partials/footer') %>

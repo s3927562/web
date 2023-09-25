@@ -1,3 +1,11 @@
+// RMIT University Vietnam
+// Course: COSC2430 Web Programming
+// Semester: 2023B
+// Assessment: Assignment 2
+// Author: Tran Thanh Tung, Nguyen Trung Tin, Le Minh Tan
+// ID: s3927562, s3988418, s3911653
+// Acknowledgement: RMIT University, COSC2430 Course, Week 1 - 12 Lectures
+
 // Example starter JavaScript for disabling form submissions if there are invalid fields
 (function () {
     'use strict';
