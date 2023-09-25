@@ -2,6 +2,7 @@
 https://github.com/s3927562/web
 
 # Video demonstration
+https://youtu.be/A7kGH-m0o44
 
 # Test accounts
 ## Vendors
